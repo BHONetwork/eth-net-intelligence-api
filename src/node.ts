@@ -13,7 +13,6 @@ import {
   MAX_CONNECTION_ATTEMPTS,
   MAX_HISTORY_UPDATE,
   NODE_TYPE,
-  ONLY_BLOCKNUMBER,
   PING_INTERVAL,
   RPC_HOST,
   SYNC_INTERVAL,
@@ -22,12 +21,12 @@ import {
   WS_SERVER,
 } from './constants';
 import { Socket } from 'dgram';
-import console from './utils/logger';
 import { TBlock, TInfo, TStats } from './types';
 import { ethers } from 'ethers';
 import chalk from 'chalk';
 import { convertHexToNumber } from './utils/convert';
 import { Slack } from './slack';
+import console from './utils/logger';
 class Node {
   info: TInfo;
   id: string;
@@ -316,23 +315,10 @@ class Node {
         // @ts-ignore
         console.info(`==>`, timeString);
         try {
-          const result = ONLY_BLOCKNUMBER
-            ? {
-                number: ethers.utils.hexValue(blockNumber),
-                hash: '?',
-                difficulty: ethers.utils.hexValue(0),
-                timestamp: ethers.utils.hexValue(0),
-                totalDifficulty: ethers.utils.hexValue(0),
-                size: ethers.utils.hexValue(0),
-                nonce: 0,
-                gasUsed: ethers.utils.hexValue(0),
-                gasLimit: ethers.utils.hexValue(0),
-                transactions: [],
-              }
-            : await this._provider.send('eth_getBlockByNumber', [
-                ethers.utils.hexValue(blockNumber),
-                true,
-              ]);
+          const result = await this._provider.send('eth_getBlockByNumber', [
+            ethers.utils.hexValue(blockNumber),
+            true,
+          ]);
 
           return this.validateLatestBlock(result);
         } catch (error) {
@@ -367,10 +353,8 @@ class Node {
     console.sstats('==>', 'Got block:', chalk.reset.red(block.number));
 
     this.stats.block = block;
-    if (!ONLY_BLOCKNUMBER) {
-      this.stats.pending = block.transactions.length;
-      this.sendPendingUpdate();
-    }
+    this.stats.pending = block.transactions.length;
+    this.sendPendingUpdate();
     this.sendBlockUpdate();
 
     if (this.stats.block.number - this._lastBlock > 1) {

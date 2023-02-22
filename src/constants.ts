@@ -27,4 +27,3 @@ export const DEFAULT_RPC_HOST =
   process.env.DEFAULT_RPC_HOST || 'https://bsc-dataseed1.defibit.io';
 
 export const DIFF_BLOCK = process.env.DIFF_BLOCK || 30;
-export const ONLY_BLOCKNUMBER = process.env.ONLY_BLOCKNUMBER || false;
