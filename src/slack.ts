@@ -22,7 +22,7 @@ export class Slack {
         this._status = true;
       }
     } catch (error) {
-      console.error('Slack webhook connection', 'failed');
+      console.error('sla', 'Slack webhook connection', 'failed');
       this._status = false;
     }
   };
@@ -35,10 +35,17 @@ export class Slack {
     if (this._status) {
       try {
         const diff = defaultBlock - nodeBlock;
-        console.log('sendAlert', defaultBlock, nodeBlock, diff, this._retries);
 
         if (diff > DIFF_BLOCK) {
           if (this._retries % 120 === 0) {
+            console.slack(
+              'sla',
+              'sendAlert',
+              defaultBlock,
+              nodeBlock,
+              diff,
+              this._retries,
+            );
             await this.webhook.send({
               text: `:boom: *${nodeName}* syncing error :boom: \n current block is \`${nodeBlock}\`. It doesn't reach to \`${defaultBlock}\` <@U024T9BH9GB>`,
               emoji: true,
@@ -48,7 +55,7 @@ export class Slack {
           this._retries += 1;
         }
       } catch (error) {
-        console.error('Slack Alert', chalk.yellow('Send'), 'failed');
+        console.error('sla', 'Slack Alert', chalk.yellow('Send'), 'failed');
       }
     }
   };

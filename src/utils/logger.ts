@@ -6,16 +6,18 @@ declare global {
     success: any;
     stats: any;
     sstats: any;
+    slack: any;
   }
 }
 
 const signs = ['==>', '!!!', 'xx>', '===', '>>>', 'xxx', '=H=', '   '];
 
-const types = ['eth', 'wsc', 'sys', 'his'];
+const types = ['eth', 'wsc', 'sys', 'his', 'sla'];
 
 // const methods = {};
 const verbosity = [
   'info',
+  'slack',
   'stats',
   'sstats',
   'error',
@@ -61,6 +63,16 @@ const verbosity = [
     sign: '=✓=',
     signColor: chalk.green,
     messageColor: chalk.bold.green,
+    formatter: function (sign, message) {
+      return [sign, message];
+    },
+  },
+  {
+    name: 'slack',
+    inherit: 'log',
+    sign: '=🚀=',
+    signColor: chalk.yellow,
+    messageColor: chalk.bold.yellow,
     formatter: function (sign, message) {
       return [sign, message];
     },

@@ -13,6 +13,7 @@ import {
   MAX_CONNECTION_ATTEMPTS,
   MAX_HISTORY_UPDATE,
   NODE_TYPE,
+  ONLY_BLOCKNUMBER,
   PING_INTERVAL,
   RPC_HOST,
   SYNC_INTERVAL,
@@ -315,10 +316,24 @@ class Node {
         // @ts-ignore
         console.info(`==>`, timeString);
         try {
-          const result: TBlock = await this._provider.send(
-            'eth_getBlockByNumber',
-            [ethers.utils.hexValue(blockNumber), true],
-          );
+          const result = ONLY_BLOCKNUMBER
+            ? {
+                number: blockNumber,
+                hash: '?',
+                difficulty: ethers.utils.hexValue(0),
+                timestamp: ethers.utils.hexValue(0),
+                totalDifficulty: ethers.utils.hexValue(0),
+                size: ethers.utils.hexValue(0),
+                nonce: 0,
+                gasUsed: ethers.utils.hexValue(0),
+                gasLimit: ethers.utils.hexValue(0),
+                transactions: [],
+              }
+            : await this._provider.send('eth_getBlockByNumber', [
+                ethers.utils.hexValue(blockNumber),
+                true,
+              ]);
+
           return this.validateLatestBlock(result);
         } catch (error) {
           console.error('xx>', "getLatestBlock couldn't fetch block...");
@@ -352,10 +367,11 @@ class Node {
     console.sstats('==>', 'Got block:', chalk.reset.red(block.number));
 
     this.stats.block = block;
-
-    this.stats.pending = block.transactions.length;
-    this.sendPendingUpdate();
-    this.sendBlockUpdate();
+    if (!ONLY_BLOCKNUMBER) {
+      this.stats.pending = block.transactions.length;
+      this.sendPendingUpdate();
+      this.sendBlockUpdate();
+    }
 
     if (this.stats.block.number - this._lastBlock > 1) {
       const range = _.range(
