@@ -318,7 +318,7 @@ class Node {
         try {
           const result = ONLY_BLOCKNUMBER
             ? {
-                number: blockNumber,
+                number: ethers.utils.hexValue(blockNumber),
                 hash: '?',
                 difficulty: ethers.utils.hexValue(0),
                 timestamp: ethers.utils.hexValue(0),
