@@ -350,7 +350,6 @@ class Node {
         Math.max(this.stats.block.number, 0),
         1,
       );
-      console.info('ENABLE_HISTORY', ENABLE_HISTORY);
       if (ENABLE_HISTORY) this.getHistory({ list: range });
     }
 
@@ -458,7 +457,7 @@ class Node {
         chalk.reset.blue(force ? 'forced' : 'changed'),
         chalk.bold.white('update'),
       );
-      var stats = this.prepareStats();
+      const stats = this.prepareStats();
       console.info(stats);
       this.emit('stats', stats);
       this.emit('stats', this.prepareStats());
@@ -506,8 +505,7 @@ class Node {
   };
 
   changed = () => {
-    var changed = !_.isEqual(this._lastStats, JSON.stringify(this.stats));
-
+    const changed = !_.isEqual(this._lastStats, JSON.stringify(this.stats));
     return changed;
   };
 
