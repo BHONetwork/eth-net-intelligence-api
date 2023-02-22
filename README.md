@@ -1,9 +1,5 @@
 # ETH Net Intelligence API
-
-[![TypeScript version][ts-badge]][typescript-4-9]
-[![Node.js version][nodejs-badge]][nodejs]
-[![Build Status - GitHub Actions][gha-badge]][gha-ci]
-
+![Build Status - GitHub Actions](https://github.com/github/docs/actions/workflows/nodejs.yml/badge.svg)
 ## Getting Started
 
 Updating
