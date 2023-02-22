@@ -370,8 +370,8 @@ class Node {
     if (!ONLY_BLOCKNUMBER) {
       this.stats.pending = block.transactions.length;
       this.sendPendingUpdate();
-      this.sendBlockUpdate();
     }
+    this.sendBlockUpdate();
 
     if (this.stats.block.number - this._lastBlock > 1) {
       const range = _.range(
