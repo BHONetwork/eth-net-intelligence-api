@@ -6,6 +6,7 @@ import * as Latency from 'primus-spark-latency';
 import {
   CONNECTION_ATTEMPTS_TIMEOUT,
   CONTACT_DETAILS,
+  DEFAULT_RPC_HOST,
   ENABLE_HISTORY,
   INSTANCE_NAME,
   MAX_BLOCKS_HISTORY,
@@ -25,7 +26,7 @@ import { TBlock, TInfo, TStats } from './types';
 import { ethers } from 'ethers';
 import chalk from 'chalk';
 import { convertHexToNumber } from './utils/convert';
-
+import { Slack } from './slack';
 class Node {
   info: TInfo;
   id: string;
@@ -46,6 +47,7 @@ class Node {
   _lastBlockSentAt: number;
   pingInterval: any;
   syncInterval: any;
+  slack: Slack;
 
   constructor() {
     console.log('init node');
@@ -104,10 +106,23 @@ class Node {
     this._lastBlockSentAt = 0;
     this._connection_attempts = 0;
     this.startRpcConnection();
+    this.startDefaultRpcConnection();
   }
 
+  startDefaultRpcConnection = (): void => {
+    if (DEFAULT_RPC_HOST !== '') {
+      this.slack = new Slack();
+      console.info('Starting Default RPC connection');
+      const provider = new ethers.providers.JsonRpcBatchProvider(
+        DEFAULT_RPC_HOST,
+      );
+      provider.on('block', (blockNumber) => {
+        this.slack.sendAlert(this.info.name, blockNumber, this._lastBlock);
+      });
+    }
+  };
   startRpcConnection = (): void => {
-    console.info('Starting web3 connection');
+    console.info('Starting RPC connection');
     this._provider = new ethers.providers.JsonRpcProvider(RPC_HOST);
     this.checkRpcConnection();
   };
@@ -121,9 +136,10 @@ class Node {
 
     if (this.updateInterval) clearInterval(this.updateInterval);
 
-    console.info('Web3 reconnect attempts started');
+    console.info('RPC reconnect attempts started');
 
     this.startRpcConnection();
+    this.startDefaultRpcConnection();
   };
   checkRpcConnection = async () => {
     if (!this._ethers) {

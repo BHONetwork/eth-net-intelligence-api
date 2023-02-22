@@ -20,3 +20,10 @@ export const MAX_CONNECTION_ATTEMPTS = 50;
 export const CONNECTION_ATTEMPTS_TIMEOUT = 1000;
 
 export const ENABLE_HISTORY = process.env.ENABLE_HISTORY || true;
+
+export const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL || '';
+
+export const DEFAULT_RPC_HOST =
+  process.env.DEFAULT_RPC_HOST || 'https://bsc-dataseed1.defibit.io';
+
+export const DIFF_BLOCK = process.env.DIFF_BLOCK || 30;
