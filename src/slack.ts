@@ -50,7 +50,6 @@ export class Slack {
               text: `:boom: *${nodeName}* syncing error :boom: \n current block is \`${nodeBlock}\`. It doesn't reach to \`${defaultBlock}\` <@U024T9BH9GB>`,
               emoji: true,
             });
-            this._retries = 0;
           }
           this._retries += 1;
         }
@@ -58,5 +57,6 @@ export class Slack {
         console.error('sla', 'Slack Alert', chalk.yellow('Send'), 'failed');
       }
     }
+    return true;
   };
 }

@@ -353,8 +353,7 @@ class Node {
     console.sstats('==>', 'Got block:', chalk.reset.red(block.number));
 
     this.stats.block = block;
-    this.stats.pending = block.transactions.length;
-    this.sendPendingUpdate();
+
     this.sendBlockUpdate();
 
     if (this.stats.block.number - this._lastBlock > 1) {
@@ -502,20 +501,6 @@ class Node {
         peers: this.stats.peers,
         gasPrice: this.stats.gasPrice,
         uptime: this.stats.uptime,
-      },
-    };
-  };
-
-  sendPendingUpdate = () => {
-    console.stats('wsc', 'Sending pending update');
-    this.emit('pending', this.preparePending());
-  };
-
-  preparePending = () => {
-    return {
-      id: this.id,
-      stats: {
-        pending: this.stats.pending,
       },
     };
   };
