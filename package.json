@@ -39,8 +39,8 @@
     "test": "jest --coverage",
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "jest --watch",
-    "dev": "tsc-watch --onSuccess \"ts-node-dev --inspect -r tsconfig-paths/register src/main.ts\"",
-    "dev:local": "ln -s -f .env.local .env && ts-node-dev --inspect -r tsconfig-paths/register src/main.ts",
+    "dev": "tsc-watch --onSuccess \"ts-node-dev --inspect -r tsconfig-paths/register src/dev.ts\"",
+    "dev:local": "ln -s -f .env.local .env && ts-node-dev --inspect -r tsconfig-paths/register src/dev.ts",
     "prepare": "husky install"
   },
   "author": "Jakub Synowiec <jsynowiec@users.noreply.github.com>",

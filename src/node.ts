@@ -42,6 +42,8 @@ class Node {
   _latency: number;
   _ethers: boolean;
   _provider: ethers.providers.JsonRpcProvider;
+  _defaultProvider: ethers.providers.JsonRpcProvider;
+
   _connection_attempts: number;
   updateInterval: any;
   _lastBlockSentAt: number;
@@ -113,10 +115,10 @@ class Node {
     if (DEFAULT_RPC_HOST !== '') {
       this.slack = new Slack();
       console.info('Starting Default RPC connection');
-      const provider = new ethers.providers.JsonRpcBatchProvider(
+      this._defaultProvider = new ethers.providers.JsonRpcBatchProvider(
         DEFAULT_RPC_HOST,
       );
-      provider.on('block', (blockNumber) => {
+      this._defaultProvider.on('block', (blockNumber) => {
         this.slack.sendAlert(this.info.name, blockNumber, this._lastBlock);
       });
     }
@@ -324,6 +326,7 @@ class Node {
         } catch (error) {
           console.error('xx>', "getLatestBlock couldn't fetch block...");
           console.error('xx>', error);
+          this.setInactive();
           return false;
         }
       });
@@ -439,6 +442,7 @@ class Node {
       return true;
     } catch (error) {
       console.error('his', 'history fetch failed:', error);
+      this.setInactive();
       return false;
     }
   };
@@ -663,6 +667,7 @@ class Node {
     if (this.pingInterval) clearInterval(this.pingInterval);
 
     this._provider.removeAllListeners();
+    this._defaultProvider.removeAllListeners();
   };
 }
 
