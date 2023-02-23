@@ -134,13 +134,13 @@ class Node {
 
     this._ethers = false;
     this._connection_attempts = 0;
-    this._provider.removeAllListeners();
-    this._defaultProvider.removeAllListeners();
+    // this._provider.removeAllListeners();
+    // this._defaultProvider.removeAllListeners();
 
     if (this.updateInterval) clearInterval(this.updateInterval);
 
     console.info('RPC reconnect attempts started');
-
+    this.setWatches();
     this.startRpcConnection();
     this.startDefaultRpcConnection();
   };
