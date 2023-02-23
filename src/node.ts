@@ -135,6 +135,7 @@ class Node {
     this._ethers = false;
     this._connection_attempts = 0;
     this._provider.removeAllListeners();
+    this._defaultProvider.removeAllListeners();
 
     if (this.updateInterval) clearInterval(this.updateInterval);
 
@@ -226,7 +227,7 @@ class Node {
     // this.setFilters();
     console.info('setWatches');
     this.updateInterval = setInterval(() => {
-      this.getStats();
+      if (this._ethers) this.getStats();
     }, UPDATE_INTERVAL);
 
     if (!this.pingInterval) {
@@ -236,6 +237,7 @@ class Node {
     }
     if (!this.syncInterval) {
       this.syncInterval = setInterval(async () => {
+        if (!this._ethers) return false;
         try {
           const sync = await this._provider.send('eth_syncing', []);
           if (sync) {
@@ -254,6 +256,7 @@ class Node {
           this.stats.syncing = false;
           console.error('SYNC ERROR', error);
         }
+        return true;
       }, SYNC_INTERVAL);
     }
   };
