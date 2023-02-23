@@ -138,6 +138,8 @@ class Node {
     this._defaultProvider.removeAllListeners();
 
     if (this.updateInterval) clearInterval(this.updateInterval);
+    if (this.pingInterval) clearInterval(this.pingInterval);
+    if (this.syncInterval) clearInterval(this.syncInterval);
 
     console.info('RPC reconnect attempts started');
     this.startRpcConnection();
@@ -227,10 +229,11 @@ class Node {
   setWatches = async () => {
     // this.setFilters();
     console.info('setWatches');
-    this.updateInterval = setInterval(() => {
-      if (this._ethers) this.getStats();
-    }, UPDATE_INTERVAL);
-
+    if (!this.updateInterval) {
+      this.updateInterval = setInterval(() => {
+        if (this._ethers) this.getStats();
+      }, UPDATE_INTERVAL);
+    }
     if (!this.pingInterval) {
       this.pingInterval = setInterval(() => {
         this.ping();
