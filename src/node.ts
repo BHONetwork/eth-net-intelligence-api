@@ -134,13 +134,12 @@ class Node {
 
     this._ethers = false;
     this._connection_attempts = 0;
-    // this._provider.removeAllListeners();
-    // this._defaultProvider.removeAllListeners();
+    this._provider.removeAllListeners();
+    this._defaultProvider.removeAllListeners();
 
     if (this.updateInterval) clearInterval(this.updateInterval);
 
     console.info('RPC reconnect attempts started');
-    this.setWatches();
     this.startRpcConnection();
     this.startDefaultRpcConnection();
   };
@@ -188,6 +187,8 @@ class Node {
 
     // Set filters
     this.setWatches();
+    this.getLatestBlock();
+    this.getStats(true);
   };
 
   getInfo = async () => {
@@ -580,8 +581,8 @@ class Node {
         this._socket = true;
         console.success('wsc', 'The socket connection has been established.');
 
-        this.getLatestBlock();
-        this.getStats(true);
+        // this.getLatestBlock();
+        // this.getStats(true);
       })
       .on('data', (data) => {
         console.stats('Socket received some data', data);
@@ -645,8 +646,8 @@ class Node {
           'ms',
         );
 
-        this.getLatestBlock();
-        this.getStats(true);
+        // this.getLatestBlock();
+        // this.getStats(true);
       })
       .on('reconnect timeout', (err) => {
         this._socket = false;
