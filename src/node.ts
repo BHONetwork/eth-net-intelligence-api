@@ -130,8 +130,6 @@ class Node {
   };
 
   reconnectRpc = () => {
-    console.warn('Uninstalling filters and update interval');
-
     this._ethers = false;
     this._connection_attempts = 0;
     this._provider.removeAllListeners();
@@ -150,12 +148,13 @@ class Node {
       const block = await this._provider.getBlockNumber();
       if (block > 0) {
         this._ethers = true;
+        this._connection_attempts = 0;
         this.init();
         return true;
       } else {
         if (this._connection_attempts < MAX_CONNECTION_ATTEMPTS) {
           console.error(
-            'Web3 connection attempt',
+            'RPC connection attempt',
             chalk.cyan('#' + this._connection_attempts++),
             'failed',
           );
@@ -165,11 +164,11 @@ class Node {
           );
 
           setTimeout(() => {
-            this.checkRpcConnection();
+            this.startRpcConnection();
           }, CONNECTION_ATTEMPTS_TIMEOUT * this._connection_attempts);
         } else {
           console.error(
-            'Web3 connection failed',
+            'RPC connection failed',
             chalk.cyan(MAX_CONNECTION_ATTEMPTS),
             'times. Aborting...',
           );

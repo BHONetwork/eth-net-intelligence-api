@@ -14,7 +14,7 @@ export const PING_INTERVAL = 3000;
 export const SYNC_INTERVAL = 5000;
 export const MAX_HISTORY_UPDATE = 50;
 export const MAX_CONNECTION_ATTEMPTS = 50;
-export const CONNECTION_ATTEMPTS_TIMEOUT = 1000;
+export const CONNECTION_ATTEMPTS_TIMEOUT = 100000;
 
 export const ENABLE_HISTORY = process.env.ENABLE_HISTORY || true;
 export const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL || '';
