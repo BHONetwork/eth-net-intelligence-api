@@ -141,9 +141,9 @@ class Node {
     this._provider.removeAllListeners();
     this._defaultProvider.removeAllListeners();
 
-    if (this.updateInterval) clearInterval(this.updateInterval);
-    if (this.pingInterval) clearInterval(this.pingInterval);
-    if (this.syncInterval) clearInterval(this.syncInterval);
+    if (this.updateInterval) this.resetUpdateInterval();
+    if (this.pingInterval) this.resetPing();
+    if (this.syncInterval) this.resetSync();
 
     this.startRpcConnection();
     this.startDefaultRpcConnection();
@@ -241,16 +241,19 @@ class Node {
     // this.setFilters();
     console.info('setWatches');
     if (!this.updateInterval) {
+      console.info('eth', 'Init getStats');
       this.updateInterval = setInterval(() => {
         if (this._ethers) this.getStats();
       }, UPDATE_INTERVAL);
     }
     if (!this.pingInterval) {
+      console.info('wsc', 'Init node-ping');
       this.pingInterval = setInterval(() => {
         this.ping();
       }, PING_INTERVAL);
     }
     if (!this.syncInterval) {
+      console.info('eth', 'Check sync');
       this.syncInterval = setInterval(async () => {
         if (!this._ethers) return false;
         try {
@@ -677,12 +680,38 @@ class Node {
       });
   };
 
+  resetUpdateInterval = () => {
+    clearInterval(this.updateInterval);
+    this.updateInterval = false;
+  };
+
+  resetSocket = () => {
+    this._socket = false;
+    try {
+      this.socket.disconnect();
+    } catch (error) {
+      console.error('wsc', error);
+    }
+  };
+
+  resetPing = () => {
+    clearInterval(this.pingInterval);
+    this.pingInterval = false;
+  };
+
+  resetSync = () => {
+    clearInterval(this.syncInterval);
+    this.syncInterval = false;
+  };
+
   stop = () => {
-    if (this._socket) this.socket.disconnect();
+    if (this._socket) this.resetSocket();
 
-    if (this.updateInterval) clearInterval(this.updateInterval);
+    if (this.updateInterval) this.resetUpdateInterval();
 
-    if (this.pingInterval) clearInterval(this.pingInterval);
+    if (this.pingInterval) this.resetPing();
+
+    if (this.syncInterval) this.resetSync();
 
     this._provider.removeAllListeners();
     this._defaultProvider.removeAllListeners();
