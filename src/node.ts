@@ -124,7 +124,7 @@ class Node {
     }
   };
   startRpcConnection = (): void => {
-    console.info('Starting RPC connection');
+    console.info('eth', 'Starting RPC connection');
     try {
       this._provider = new ethers.providers.JsonRpcProvider(RPC_HOST);
     } catch (error) {
@@ -135,6 +135,7 @@ class Node {
   };
 
   reconnectRpc = () => {
+    console.info('eth', 'Reconnect Rpc ...');
     this._ethers = false;
     this._connection_attempts = 0;
     this._provider.removeAllListeners();
@@ -144,14 +145,15 @@ class Node {
     if (this.pingInterval) clearInterval(this.pingInterval);
     if (this.syncInterval) clearInterval(this.syncInterval);
 
-    console.info('RPC reconnect attempts started');
     this.startRpcConnection();
     this.startDefaultRpcConnection();
   };
   checkRpcConnection = async () => {
+    console.info('eth', 'Check RPC connection');
     if (!this._ethers) {
       const block = await this._provider.getBlockNumber();
       if (block > 0) {
+        console.info('eth', 'RPC connected!');
         this._ethers = true;
         this._connection_attempts = 0;
         this.init();
@@ -159,13 +161,17 @@ class Node {
       } else {
         if (this._connection_attempts < MAX_CONNECTION_ATTEMPTS) {
           console.error(
+            'eth',
             'RPC connection attempt',
             chalk.cyan('#' + this._connection_attempts++),
             'failed',
           );
           console.error(
+            'eth',
             'Trying again in',
-            chalk.cyan(500 * this._connection_attempts + ' ms'),
+            chalk.cyan(
+              CONNECTION_ATTEMPTS_TIMEOUT * this._connection_attempts + ' ms',
+            ),
           );
 
           setTimeout(() => {
@@ -173,6 +179,7 @@ class Node {
           }, CONNECTION_ATTEMPTS_TIMEOUT * this._connection_attempts);
         } else {
           console.error(
+            'eth',
             'RPC connection failed',
             chalk.cyan(MAX_CONNECTION_ATTEMPTS),
             'times. Aborting...',
@@ -621,9 +628,6 @@ class Node {
       .on('close', () => {
         this._socket = false;
         console.error('wsc', 'Socket connection has been closed');
-        this.socket.disconnect();
-        this.setupSockets();
-        this.setInactive();
       })
       .on('offline', () => {
         this._socket = false;
@@ -655,7 +659,7 @@ class Node {
           opts.duration,
           'ms',
         );
-
+        this.setInactive();
         // this.getLatestBlock();
         // this.getStats(true);
       })
