@@ -616,6 +616,9 @@ class Node {
       .on('close', () => {
         this._socket = false;
         console.error('wsc', 'Socket connection has been closed');
+        this.socket.disconnect();
+        this.setupSockets();
+        this.setInactive();
       })
       .on('offline', () => {
         this._socket = false;
