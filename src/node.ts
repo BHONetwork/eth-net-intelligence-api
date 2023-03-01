@@ -125,8 +125,13 @@ class Node {
   };
   startRpcConnection = (): void => {
     console.info('Starting RPC connection');
-    this._provider = new ethers.providers.JsonRpcProvider(RPC_HOST);
-    this.checkRpcConnection();
+    try {
+      this._provider = new ethers.providers.JsonRpcProvider(RPC_HOST);
+    } catch (error) {
+      console.error('eth', error);
+    } finally {
+      this.checkRpcConnection();
+    }
   };
 
   reconnectRpc = () => {
